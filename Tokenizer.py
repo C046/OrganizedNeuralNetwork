@@ -10,6 +10,12 @@ import re
 import string
 import pandas as pd
 import requests
+from Books.open import *
+
+def load_data(Name):
+    return Books(f"{Name}").content
+
+data = load_data("Frankenstein.txt")
 
 class Token:
     def __init__(self, *args, **kwargs):
@@ -20,44 +26,63 @@ class Token:
         # Check if any character in the token is a punctuation symbol
         return any(char in string.punctuation for char in token)
     
-    def get_definitions(self, Wordlist, url="", api_key=""): 
-        def get_(Word, url=url, api_key=""):
-            
-            url = url+Word
-       
-            
-            try:
-                response = requests.get(url)
-                if response.status_code == 200:
-                    definitions = response.json()
-                    return definitions[0][0]
-                else:
-                    print(f"Error: {response.status_code}")
     
-            except Exception as E:
-                print(f"An error has occured fucker: {E}")
+    def get_definitions(self, Wordlist, dictionaryType="collegiate", api_key="7157541e-2e7a-4a18-bd9c-f3a1724fc6fc"):
+        Wordlist = list(set(Wordlist))
+        def get_definition(Word, dictionaryType=dictionaryType, api_key=api_key):
+            base_url = "https://www.dictionaryapi.com/api/v3/references"
+            endpoint = f"{base_url}/{dictionaryType}/json/{Word}"
+        
+            try:
+                resp = requests.get(endpoint, params={"key":api_key})
+                content = resp.content
+                print(resp)
             
-           
-        return [get_(word, url=url, api_key=api_key) for word in Wordlist]
+                if isinstance(resp.json(), list):
+                    return resp.json()[0]["shortdef"]
+        
+            except requests.exceptions.HTTPError as HTTPError:
+                print(f"HTTP Error: {HTTPError}")
             
+            except requests.exceptions.RequestException as err:
+                print(f"Request Error: {err}")
+        
+            except Exception as e:
+                print(f"An unexpected error has occured: {e}")
+        
+            return ["Error retrieving definition"]
+        definition = [{word:get_definition("\n"+word, dictionaryType=dictionaryType, api_key=api_key)} for word in Wordlist]
+        
+        return definition
+    
+ 
     def tokenize(self, Message):
-        tokens = self.token_pattern.split(Message)
-        # Remove empty strings from the list
-        tokens = [token for token in tokens if token]
+        ##########################################################
+        """Ye, right in this section right here"""
+        tokens = self.token_pattern.split(Message) # over here
+        # Remove empty strings from the list       # over here
+        tokens = [token for token in tokens if token] # over here
+        # Isolate these tokens more                   # over here
+        """This is probably where you need to work""" # over here
+        #########################################################
+
+
         # Initialize scorecards
         scorecard = {"Statements": [], "Questions": []}
 
-        for i in tokens:
+        for word in tokens:
             # Check if the token contains any punctuation
-            if self.contains_punctuation(i):
+            if self.contains_punctuation(word):
                 # Create a scorecard system for statements
-                if i[-1] == ".":
+                if word[-1] == ".":
+                    word = word.removesuffix(".")
                     scorecard["Statements"].append(True)
                 else:
                     scorecard["Statements"].append(False)
                 
                 # Create a scorecard for questions
-                if i[-1] == "?":
+                if word[-1] == "?":
+                    word = word.removesuffix("?")
                     scorecard["Questions"].append(True)
                 else:
                     scorecard["Questions"].append(False)
@@ -73,5 +98,5 @@ class Token:
     
 # Example usage
 T = Token()
-ScoreCard, MessageTokens = T.tokenize("This is a message? This is a statement.")
-e = T.get_definitions(MessageTokens,url=f"https://api.dictionaryapi.dev/api/v2/entries/en/")
+ScoreCard, MessageTokens = T.tokenize(data)
+e = T.get_definitions(MessageTokens)
