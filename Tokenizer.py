@@ -10,7 +10,7 @@ import re
 import string
 import pandas as pd
 import requests
-from Books.open import *
+from OrganizedNeuralNetwork.Books.open import *
 
 def load_data(Name):
     return Books(f"{Name}").content
@@ -25,7 +25,6 @@ class Token:
     def contains_punctuation(self, token):
         # Check if any character in the token is a punctuation symbol
         return any(char in string.punctuation for char in token)
-    
     
     def get_definitions(self, Wordlist, dictionaryType="collegiate", api_key="7157541e-2e7a-4a18-bd9c-f3a1724fc6fc"):
         Wordlist = list(set(Wordlist))
@@ -55,7 +54,6 @@ class Token:
         
         return definition
     
- 
     def tokenize(self, Message):
         ##########################################################
         """Ye, right in this section right here"""
@@ -93,9 +91,6 @@ class Token:
 
         return (pd.concat([statement_series, questions_series], axis=1), tokens)
 
-
-
-    
 # Example usage
 T = Token()
 ScoreCard, MessageTokens = T.tokenize(data)

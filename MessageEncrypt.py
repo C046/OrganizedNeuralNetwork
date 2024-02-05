@@ -18,7 +18,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
 
 # Define Custom imports below
-from Rand.Random import Rand
+from OrganizedNeuralNetwork.Rand.Random import Rand
 
 
 class PECG:

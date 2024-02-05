@@ -23,7 +23,7 @@ class Books:
             print(f"Successfully retrieved the book: '{self.name}'")
             
     def _openBook(self):
-        path =( os.path.abspath("Books") + "\\" + self.name + self.ext).replace("\\", "/")
+        path =( os.path.abspath("OrganizedNeuralNetwork\\Books") + "\\" + self.name + self.ext).replace("\\", "/")
         try:
             with open(path, "r", encoding="utf-8") as file:
                 book_content = file.read()
