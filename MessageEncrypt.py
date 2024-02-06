@@ -49,7 +49,7 @@ class PECG:
         self.private_key, self.public_key = self.generate_key_pair()
 
         self.iterations=10000
-        self.iv = os.urandom(12)
+        self.iv = os.urandom(np.random.randint(30, 32))
        
     def generate_key_pair(self):
         """
