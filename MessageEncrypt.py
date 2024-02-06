@@ -47,13 +47,10 @@ class PECG:
         self.password = Rand(size, shuffle_count=np.random.randint(size // 2, size), special_chars=True, capitals=True, lower=True, numbers=True, bytes=True).string
         # Generate key pairs
         self.private_key, self.public_key = self.generate_key_pair()
-        # Serialize private and public keys
-        self.serialized_private_key = self.serialize_private_key(self.private_key, size)
-        self.serialized_public_key = self.serialize_public_key(self.public_key)
-        # De-serialize private and public keys
-        self.deserialized_private_key = self.deserialize_private_key(self.serialized_private_key)
-        self.deserialized_public_key = self.deserialize_public_key(self.serialized_public_key)
 
+        self.iterations=10000
+        self.iv = os.urandom(12)
+       
     def generate_key_pair(self):
         """
         Generate Elliptic Curve key pair using the SECP521R1 curve.
@@ -65,7 +62,7 @@ class PECG:
         public_key = private_key.public_key()
         return private_key, public_key
 
-    def serialize_private_key(self, key, size):
+    def serialize_private_key(self, key):
         """
         Serialize and encrypt the private key.
 
@@ -122,73 +119,147 @@ class PECG:
         """
         return serialization.load_ssh_public_key(key, backend=default_backend())
     
-    
-    def encrypt_message(self, message, public_key, associated_data):
-        self.iv = os.urandom(12)
-        shared_key = self.private_key.exchange(ec.ECDH(), peer_public_key=public_key)
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA512(),
-            length=32,
-            salt=os.urandom(12),
-            iterations=100000,
-            backend=default_backend()
-        )
-        derived_key = kdf.derive(shared_key)
-        
-        cipher = Cipher(
-            algorithms.AES256(derived_key),
-            modes.GCM(self.iv),
-            backend=default_backend()
-        )
-        encryptor = cipher.encryptor()
-        
-        encryptor.authenticate_additional_data(associated_data)
-        
-        ciphertext = encryptor.update(message) + encryptor.finalize()
-  
-        
-        return (ciphertext, encryptor.tag)
-    
-    def decrypt_message(self, ciphertext, public_key, authTag, associated_data):
-        shared_key = self.private_key.exchange(ec.ECDH(), peer_public_key=public_key)
-        
+    def deserialize_PEM_public_key(self, key):
+        """
+        Deserialize a PEM-formatted public key.
+
+        Parameters:
+            key (bytes): Serialized PEM-formatted public key.
+
+        Returns:
+            cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey: De-serialized public key.
+        """
+        return serialization.load_pem_public_key(key, backend=default_backend())
+
+    def derive_key(self, shared_key):
+        """
+        Derive a key using PBKDF2HMAC.
+
+        Parameters:
+            shared_key (bytes): Shared key.
+
+        Returns:
+            bytes: Derived key.
+        """
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA512(),
             length=32,
             salt=self.iv,
-            iterations=100000,
+            iterations=self.iterations,
             backend=default_backend()
         )
-        derived_key = kdf.derive(shared_key)
-        
-        cipher = Cipher(
-            algorithms.AES256(derived_key),
-            modes.GCM(self.iv, authTag),
-            backend=default_backend()
-        )
+        return kdf.derive(shared_key)[:32]
 
-        decryptor = cipher.decryptor()
+    def encryptor(self, key):
+        """
+        Get an AES256 encryptor using GCM mode.
+
+        Parameters:
+            key (bytes): Key for encryption.
+
+        Returns:
+            cryptography.hazmat.backends.ciphers._cipher.CipherContext: AES256 encryptor.
+        """
+        return Cipher(
+            algorithms.AES256(key),
+            modes.GCM(self.iv),
+            backend=default_backend()
+        ).encryptor()
+
+    def decryptor(self, key, tag):
+        """
+        Get an AES256 decryptor using GCM mode.
+
+        Parameters:
+            key (bytes): Key for decryption.
+            tag (bytes): Tag for decryption.
+
+        Returns:
+            cryptography.hazmat.backends.ciphers._cipher.CipherContext: AES256 decryptor.
+        """
+        return Cipher(
+            algorithms.AES256(key),
+            modes.GCM(self.iv, tag),
+            backend=default_backend()
+        ).decryptor()
+
+    def shared_key(self, private_key, public_key):
+        """
+        Compute shared key using ECDH.
+
+        Parameters:
+            private_key (cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePrivateKey): Private key.
+            public_key (cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey): Public key.
+
+        Returns:
+            bytes: Shared key.
+        """
+        return private_key.exchange(ec.ECDH(), peer_public_key=public_key)
+
+    def exchange_algorithm(self, peer_public_key):
+        """
+        Perform key exchange algorithm.
+
+        Parameters:
+            peer_public_key (cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey): Peer's public key.
+
+        Returns:
+            Tuple: Shared key, derived key.
+        """
+        peer_private_key, peer_public_key = self.generate_key_pair()
+        shared_key = self.shared_key(self.private_key, peer_public_key)
+        derived_key = self.derive_key(shared_key)
+        return shared_key, derived_key
+
+    def encrypt_message(self, message, key):
+        """
+        Encrypt a message using key exchange.
+
+        Parameters:
+            message (bytes): Message to be encrypted.
+            key (cryptography.hazmat.primitives.asymmetric.ec.EllipticCurvePublicKey): Public key.
+
+        Returns:
+            Tuple: IV, ciphertext, tag, derived key, associated data.
+        """
+        key = key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        associated_data, _ = self.generate_key_pair()
+        associated_data = self.serialize_private_key(associated_data)
+        shared_key, _ = self.exchange_algorithm(key)
+        derived_key = self.derive_key(shared_key)
+        encryptor = self.encryptor(derived_key)
+        encryptor.authenticate_additional_data(associated_data)
+        ciphertext = encryptor.update(message) + encryptor.finalize()
+        return self.iv, ciphertext.decode("latin"), encryptor.tag, derived_key, associated_data
+
+    def decrypt_message(self, ciphertext, key, tag, associated_data):
+        """
+        Decrypt a message using key exchange.
+
+        Parameters:
+            ciphertext (str): Encrypted message.
+            key (bytes): Key for decryption.
+            tag (bytes): Tag for decryption.
+            associated_data (bytes): Associated data.
+
+        Returns:
+            bytes: Decrypted message.
+        """
+        ciphertext = bytes(ciphertext.encode("latin"))
+        decryptor = self.decryptor(key, tag)
         decryptor.authenticate_additional_data(associated_data)
+        return decryptor.update(ciphertext) + decryptor.finalize()
     
-        # This is the last part you have to fix then its finished.
-        decrypted_bytes = decryptor.update(ciphertext) + decryptor.finalize()
-        decrypted_message = decrypted_bytes.decode('utf-8', errors="replace")
-        return decrypted_message
-
-        
-        
     
+# pecg = PECG(1000)
+# message = b"Hello world!"
 
+# iv, ciphertext, tag, derived_key, associated_data = pecg.encrypt_message(message, pecg.public_key)
+# ciphertext = ciphertext
 
-
-
-pecg = PECG(1000)
-private_key = pecg.private_key
-public_key = pecg.public_key
-
-ciphertext, authTag = pecg.encrypt_message(b"This is a message", public_key, b"This is the associated data.")
-
-message = pecg.decrypt_message(ciphertext, public_key, authTag, b'This is the associated data.')
-
+# decryption = pecg.decrypt_message(ciphertext, derived_key, tag, associated_data)
 
 
