@@ -5,17 +5,23 @@ Created on Fri Feb  2 08:29:02 2024
 @author: hadaw
 """
 
-
+import os
 import re
 import string
 import pandas as pd
 import requests
 from OrganizedNeuralNetwork.Books.open import *
+from OrganizedNeuralNetwork.MessageEncrypt import *
+from OrganizedNeuralNetwork.Api_Key import *
 
 def load_data(Name):
     return Books(f"{Name}").content
 
 data = load_data("Frankenstein.txt")
+pecg = PECG(1000)
+
+api_key_data = load_api_key(os.path.relpath("decryptionKey.txt"), os.path.relpath("decryptionTag.txt"), os.path.relpath("encryptedMessage.txt"), os.path.relpath("associatedData.txt"), os.path.relpath("iv.txt"))
+api_key = pecg.decrypt_message(*api_key_data).decode("utf-8")
 
 class Token:
     def __init__(self, *args, **kwargs):

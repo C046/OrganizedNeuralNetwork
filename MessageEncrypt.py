@@ -166,7 +166,7 @@ class PECG:
             backend=default_backend()
         ).encryptor()
 
-    def decryptor(self, key, tag):
+    def decryptor(self, key, tag, iv):
         """
         Get an AES256 decryptor using GCM mode.
 
@@ -179,7 +179,7 @@ class PECG:
         """
         return Cipher(
             algorithms.AES256(key),
-            modes.GCM(self.iv, tag),
+            modes.GCM(iv, tag),
             backend=default_backend()
         ).decryptor()
 
@@ -233,9 +233,9 @@ class PECG:
         encryptor = self.encryptor(derived_key)
         encryptor.authenticate_additional_data(associated_data)
         ciphertext = encryptor.update(message) + encryptor.finalize()
-        return self.iv, ciphertext.decode("latin"), encryptor.tag, derived_key, associated_data
+        return self.iv, ciphertext, encryptor.tag, derived_key, associated_data
 
-    def decrypt_message(self, ciphertext, key, tag, associated_data):
+    def decrypt_message(self, ciphertext, key, tag, associated_data, iv):
         """
         Decrypt a message using key exchange.
 
@@ -248,8 +248,10 @@ class PECG:
         Returns:
             bytes: Decrypted message.
         """
-        ciphertext = bytes(ciphertext.encode("latin"))
-        decryptor = self.decryptor(key, tag)
+        #ciphertext = bytes(ciphertext.encode("latin"))
+        #key = bytes(key.encode("latin"))
+
+        decryptor = self.decryptor(key, tag, iv)
         decryptor.authenticate_additional_data(associated_data)
         return decryptor.update(ciphertext) + decryptor.finalize()
     
@@ -260,6 +262,6 @@ class PECG:
 # iv, ciphertext, tag, derived_key, associated_data = pecg.encrypt_message(message, pecg.public_key)
 # ciphertext = ciphertext
 
-# decryption = pecg.decrypt_message(ciphertext, derived_key, tag, associated_data)
+# decryption = pecg.decrypt_message(ciphertext, derived_key, tag, associated_data, iv)
 
 
