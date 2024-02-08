@@ -100,4 +100,11 @@ class Token:
 # Example usage
 T = Token()
 ScoreCard, MessageTokens = T.tokenize(data)
-e = T.get_definitions(MessageTokens)
+#e = T.get_definitions(MessageTokens)
+# We got the definitions, now we need to save these definitions to a list of definitions
+# check if the definition is in the list for the word given and if so pass on the 
+# get definitions function, this way we are gradually building a database of definitions
+# that is not exghausting to the api.
+
+
+
