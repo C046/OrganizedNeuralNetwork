@@ -22,6 +22,8 @@ pecg = PECG(1000)
 
 api_key_data = load_api_key(os.path.relpath("decryptionKey.txt"), os.path.relpath("decryptionTag.txt"), os.path.relpath("encryptedMessage.txt"), os.path.relpath("associatedData.txt"), os.path.relpath("iv.txt"))
 key = pecg.decrypt_message(*api_key_data).decode("utf-8")
+# just our casual definition database right here.
+definition_database = []
 
 class Token:
     def __init__(self, *args, **kwargs):
@@ -57,8 +59,9 @@ class Token:
         
             return ["Error retrieving definition"]
         definition = [{word:get_definition("\n"+word, dictionaryType=dictionaryType, api_key=key)} for word in Wordlist]
+        definitions = [definition[word] for word in definition]
         
-        return definition
+        return (definition, definitions)
     
     def tokenize(self, Message):
         ##########################################################
@@ -100,7 +103,7 @@ class Token:
 # Example usage
 T = Token()
 ScoreCard, MessageTokens = T.tokenize(data)
-#e = T.get_definitions(MessageTokens)
+e = T.get_definitions(MessageTokens)
 # We got the definitions, now we need to save these definitions to a list of definitions
 # check if the definition is in the list for the word given and if so pass on the 
 # get definitions function, this way we are gradually building a database of definitions
