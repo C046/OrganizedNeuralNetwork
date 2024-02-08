@@ -2,7 +2,7 @@ from OrganizedNeuralNetwork.MessageEncrypt import *
 
    
 def encryptKey(key):
-    iv, ciphertext, tag, derived_key, associated_data = pecg.encrypt_message(api_key, pecg.public_key)
+    iv, ciphertext, tag, derived_key, associated_data = pecg.encrypt_message(key, pecg.public_key)
     with open("encryptedMessage.txt", "wb") as file:
         file.write(ciphertext)
     
@@ -49,5 +49,11 @@ def load_api_key(key_file, tag_file, ciphertext_file, associated_data_file, iv_f
     return (ciphertext, decryption_key, decryption_tag, associated_data, iv)
 
 if __name__ == "__main__":
-    pass
-
+    print("""\nYes I know it is a pain in the ass \nto retrieve it from the website but\n its the only secure
+          storage as of now.\n""")
+    if key == None:    
+        key = bytes(input("\nPlease enter an api key: "))
+        encryptKey(key)
+    else:
+        encryptKey(key)
+    

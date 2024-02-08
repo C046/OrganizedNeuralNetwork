@@ -21,7 +21,7 @@ data = load_data("Frankenstein.txt")
 pecg = PECG(1000)
 
 api_key_data = load_api_key(os.path.relpath("decryptionKey.txt"), os.path.relpath("decryptionTag.txt"), os.path.relpath("encryptedMessage.txt"), os.path.relpath("associatedData.txt"), os.path.relpath("iv.txt"))
-api_key = pecg.decrypt_message(*api_key_data).decode("utf-8")
+key = pecg.decrypt_message(*api_key_data).decode("utf-8")
 
 class Token:
     def __init__(self, *args, **kwargs):
@@ -32,7 +32,7 @@ class Token:
         # Check if any character in the token is a punctuation symbol
         return any(char in string.punctuation for char in token)
     
-    def get_definitions(self, Wordlist, dictionaryType="collegiate", api_key="7157541e-2e7a-4a18-bd9c-f3a1724fc6fc"):
+    def get_definitions(self, Wordlist, dictionaryType="collegiate", api_key=None):
         Wordlist = list(set(Wordlist))
         def get_definition(Word, dictionaryType=dictionaryType, api_key=api_key):
             base_url = "https://www.dictionaryapi.com/api/v3/references"
@@ -56,7 +56,7 @@ class Token:
                 print(f"An unexpected error has occured: {e}")
         
             return ["Error retrieving definition"]
-        definition = [{word:get_definition("\n"+word, dictionaryType=dictionaryType, api_key=api_key)} for word in Wordlist]
+        definition = [{word:get_definition("\n"+word, dictionaryType=dictionaryType, api_key=key)} for word in Wordlist]
         
         return definition
     
