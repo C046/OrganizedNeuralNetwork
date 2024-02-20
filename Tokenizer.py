@@ -59,9 +59,12 @@ class Token:
         
             return ["Error retrieving definition"]
         definition = [{word:get_definition("\n"+word, dictionaryType=dictionaryType, api_key=key)} for word in Wordlist]
-        definitions = [definition[word] for word in definition]
+        # definitions=definitions
+        # for key, value in definition:
+        #     print(key,value)
+        # #definitions = [definition[word] for word in definition]
         
-        return (definition, definitions)
+        return definition
     
     def tokenize(self, Message):
         ##########################################################
