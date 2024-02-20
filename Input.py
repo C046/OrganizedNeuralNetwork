@@ -9,9 +9,11 @@ from OrganizedNeuralNetwork.Acts import Activations
 
 class InputLayer(Activations):
     def __init__(self, input_array, batch_size=5):
-        super().__init__(input_array)
+        self.input_array = input_array
+        self.input_size = input_array.size
+        
         self.batch_size = batch_size
-        self.batch_inputs = self.batch_inputs
+        self.batch_input_method = self.batch_inputs  # Change the attribute name
     
     def batch_inputs(self):
         # Check if the batch size is not evenly divisible
@@ -27,8 +29,8 @@ class InputLayer(Activations):
 neurons = np.array([1, 2, 3, 4, 5, 6, 7, 8])
 input_layer_instance = InputLayer(neurons, batch_size=2)
 
-# Use the batch_inputs method to get batches
-batch_iterator = input_layer_instance.batch_inputs()
+# Use the batch_input_method to get batches
+batch_iterator = input_layer_instance.batch_input_method()
 
 # Example of using the generator for batches
 try:

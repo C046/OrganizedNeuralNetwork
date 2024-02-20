@@ -33,6 +33,6 @@ class Activations:
         
         
 # Example usage:
-# activations_instance = Activations(neurons)
-# for neuron in activations_instance.Iter_neuron():
-#     print(neuron)
+activations_instance = Activations(neurons)
+for neuron in activations_instance.Iter_neuron():
+    print(neuron)
