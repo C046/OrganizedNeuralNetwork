@@ -36,11 +36,9 @@ class NeuralNetwork:
                     neurons = np.array(output)
                     Y = neurons
                     
-                    for Y_True in self.y_true:
-                        top = Y*Y_True
-                        bottom = (Y*(1-Y))
-                        
-                        #gradient = (Y*Y_True)/ (Y*(1-Y))
+                    # but since i cant divide by zero its unable to go forward, hmmmm
+                    partial_derivative = (Y*(1-Y))/(Y*(1-self.y_true))
+                 
                     
                     #print(gradient)
                     
