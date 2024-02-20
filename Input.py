@@ -25,20 +25,3 @@ class InputLayer(Activations):
             batch_elements = self.input_array[i:i + self.batch_size]
             yield batch_elements
 
-# Example usage:
-neurons = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-input_layer_instance = InputLayer(neurons, batch_size=2)
-
-# Use the batch_input_method to get batches
-batch_iterator = input_layer_instance.batch_input_method()
-
-# Example of using the generator for batches
-try:
-    while True:
-        batch_elements = next(batch_iterator)
-        print("Batch Elements:", batch_elements)
-        print("---")
-except StopIteration:
-    pass
-except ValueError as e:
-    print(e)

@@ -32,7 +32,3 @@ class Activations:
             pass
         
         
-# Example usage:
-activations_instance = Activations(neurons)
-for neuron in activations_instance.Iter_neuron():
-    print(neuron)
