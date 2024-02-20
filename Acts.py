@@ -7,12 +7,12 @@ class Activations:
         self.input_array = input_array
         self.input_size = self.input_array.size
         
-        self.biases = self.Grw(size=self.input_size)
-        self.weights = self.Grw(size=self.input_size)
+        self.biases = self.Grwb(size=self.input_size)
+        self.weights = self.Grwb(size=self.input_size)
         
-    def Grw(self, size):
+    def Grwb(self, size):
         """
-        Generate random weights for the given input size.
+        <Generate Random Weights or biases> for the given input size.
 
         Parameters:
         - input_size (int): Number of input features.
@@ -23,7 +23,7 @@ class Activations:
         # Generate random weights using a normal distribution
         return np.random.normal(size=(size,))
 
-    def iter_neuron(self):
+    def Iter_neuron(self):
         try:    
             for element, bias, weights in zip(self.input_array, self.biases, self.weights):
                 yield (element, bias, weights)
@@ -33,6 +33,6 @@ class Activations:
         
         
 # Example usage:
-activations_instance = Activations(neurons)
-for neuron in activations_instance.iter_neuron():
-    print(neuron)
+# activations_instance = Activations(neurons)
+# for neuron in activations_instance.Iter_neuron():
+#     print(neuron)

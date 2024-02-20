@@ -5,40 +5,37 @@ Created on Mon Jan 29 15:05:40 2024
 @author: hadaw
 """
 import numpy as np
+from OrganizedNeuralNetwork.Acts import Activations
 
-
-weights = np.matrix([
-    [3, 1, 5, -4],
-    [-1.5, -3, 7.1, 5.2],
-    [2, 1, -6, 2.9]
-])
-inputs = np.array([0.5, 2.8, 0, -0.1])
-bias = np.array([-2, -2, -2])
-
-# Calculate the predicted output
-pred = np.dot(weights, inputs) + bias
-class InputLayer:
-    def __init__(self, n_qubits):
-        # The __init__ method is a special method that initializes the object when it's created.
-        # self.n_qubits = n_qubits
-        # self.circuit = QuantumCircuit(n_qubits)
-        # self.circuit.h(range(n_qubits))
-        
-        # self.circuit.measure_all()
-        
-        # self.backend = Aer.get_backend('qasm_simulator')
-        # self.result = execute(self.circuit, self.backend).result()
-        # self.counts = self.result.get_counts(self.circuit)
-        # # Create a 1D array of counts
-        # counts_values = list(self.counts.values())
-        
-        # # Convert it to a NumPy matrix
-        # self.total_counts = np.matrix(counts_values)
-        # self.total_counts = self.total_counts.reshape((-1,n_qubits))
- 
-        
-        #self.measured_configuration = sum(list(self.counts.keys()))/len(self.counts.keys())
-        #self.learned_weights = np.array([int(bit) for bit in self.measured_configuration])
-
-        pass
+class InputLayer(Activations):
+    def __init__(self, input_array, batch_size=5):
+        super().__init__(input_array)
+        self.batch_size = batch_size
     
+    def batch_inputs(self):
+        # Check if the batch size is not evenly divisible
+        if self.input_size % self.batch_size != 0:
+            raise ValueError("Batch size must be evenly divisible by the input size.")
+        
+        # Iterate over batches and yield them
+        for i in range(0, self.input_size, self.batch_size):
+            batch_elements = self.input_array[i:i + self.batch_size]
+            yield batch_elements
+
+# Example usage:
+neurons = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+input_layer_instance = InputLayer(neurons, batch_size=2)
+
+# Use the batch_inputs method to get batches
+batch_iterator = input_layer_instance.batch_inputs()
+
+# Example of using the generator for batches
+try:
+    while True:
+        batch_elements = next(batch_iterator)
+        print("Batch Elements:", batch_elements)
+        print("---")
+except StopIteration:
+    pass
+except ValueError as e:
+    print(e)
