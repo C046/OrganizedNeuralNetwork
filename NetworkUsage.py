@@ -35,7 +35,7 @@ for batched_inputs in input_layer.batch_inputs():
     
 # # Hidden layer pipeline
 Hidden_Layer = HiddenLayer()
-# # Output layer pipeline
+# # Outpudt layer pipeline
 Output_Layer = OutputLayer()
 
 
