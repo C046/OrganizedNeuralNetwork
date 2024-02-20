@@ -11,7 +11,7 @@ from OrganizedNeuralNetwork.Output import OutputLayer
 from OrganizedNeuralNetwork.Acts import Activations
 
 # Input array
-neurons = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+neurons = np.array([i for i in range(0,100)])
 
 # Input layer pipeline
 input_layer = InputLayer(neurons, batch_size=2)
@@ -22,17 +22,29 @@ hidden_layer = HiddenLayer()
 # Output layer pipeline
 output_layer = OutputLayer()
 
-# Example of using a single loop for both batched inputs and activations
-for batched_inputs in input_layer.batch_inputs():
-    print("\nBatch Elements:", batched_inputs)
-    
-    # Activator functions
-    activators = Activations(batched_inputs)
-    for neuron in activators.Iter_neuron():
-        neuron,bias,weights = neuron
-        print("Neuron:", neuron,"\nBias:", bias,"Weights:", weights)
-        
 
+
+num_hidden_layers = 10
+for i in range(num_hidden_layers):    
+    output = []
+    # Example of using a single loop for both batched inputs and activations
+    for batched_inputs in input_layer.batch_inputs():
+        print("\nBatch Elements:", batched_inputs)
+    
+        # Activator functions
+        activators = Activations(batched_inputs)
+    
+        for neuron in activators.Iter_neuron():
+            
+            neuron,bias,weights = neuron
+            Neuron_weighted_sum = np.dot(weights, neuron)+ bias
+            print("Neuron:", neuron,"\nBias:", bias,"Weights:", weights, f"\nNeuron Weighted Sum: {Neuron_weighted_sum}")
+        
+        
+            output.append(activators.Sigmoid(Neuron_weighted_sum))
+        
+        neurons = output
+        print(f"\n\nSigmoid: {output}") 
     
 # # Hidden layer pipeline
 Hidden_Layer = HiddenLayer()

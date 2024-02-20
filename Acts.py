@@ -1,15 +1,19 @@
 import numpy as np
 
 neurons = np.array([1, 2, 3, 4])
+from mpmath import mp
 
 class Activations:
-    def __init__(self, input_array):
+    def __init__(self, input_array, e=False):
         self.input_array = input_array
         self.input_size = self.input_array.size
         
         self.biases = self.Grwb(size=self.input_size)
         self.weights = self.Grwb(size=self.input_size)
         
+        self.e = 2.71828
+        
+    
     def Grwb(self, size):
         """
         <Generate Random Weights or biases> for the given input size.
@@ -30,5 +34,13 @@ class Activations:
         
         except StopIteration:
             pass
+    
+    def Sigmoid(self, x):
+        return 1/(1+(float(self.e)**(-x)))
         
+            
+        #return 1/(1+(float(self.e)**(-x)))
+        
+        #return 1 / 1 + (float(self.e) ** -x)
+    
         
