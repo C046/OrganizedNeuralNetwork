@@ -5,16 +5,25 @@ Created on Mon Feb 19 17:35:28 2024
 @author: hadaw
 """
 import numpy as np
+import pandas as pd
+
 from OrganizedNeuralNetwork.Input import InputLayer
 from OrganizedNeuralNetwork.Hidden import HiddenLayer
 from OrganizedNeuralNetwork.Output import OutputLayer
 from OrganizedNeuralNetwork.Acts import Activations
+from OrganizedNeuralNetwork.Norm import Normalization
+
+# Data
+data = pd.read_csv("OrganizedNeuralNetwork/breast-cancer.csv")
+tumor_descriptions = data.drop('diagnosis', axis=1)
+y_true = (data['diagnosis'].values == 'M').astype(int)
+
 
 # Input array
 neurons = np.array([i for i in range(0,100)])
 
 # Input layer pipeline
-input_layer = InputLayer(neurons, batch_size=2)
+input_layer = InputLayer(neurons, batch_size=5)
 
 # Hidden layer pipeline
 hidden_layer = HiddenLayer()
@@ -22,6 +31,8 @@ hidden_layer = HiddenLayer()
 # Output layer pipeline
 output_layer = OutputLayer()
 
+# Normalization functions
+normal = Normalization(neurons)
 
 
 num_hidden_layers = 10
@@ -44,7 +55,8 @@ for i in range(num_hidden_layers):
             output.append(activators.Sigmoid(Neuron_weighted_sum))
         
         neurons = output
-        print(f"\n\nSigmoid: {output}") 
+        norm = Normalization(neurons).binary_cross_entropy(y_true)
+        print(f"\n\nSigmoid: {output} \n{norm}") 
     
 # # Hidden layer pipeline
 Hidden_Layer = HiddenLayer()

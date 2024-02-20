@@ -4,6 +4,20 @@ Created on Mon Jan 29 14:55:02 2024
 
 @author: hadaw
 """
+from OrganizedNeuralNetwork.Acts import Activations
+import numpy as np
 
-class Normalization:
-    pass
+
+class Normalization(Activations):
+    def __init__(self, input_array):
+        super().__init__(input_array)
+        self.neurons = input_array
+    
+    def binary_cross_entropy(self, true_labels):
+        epsilon = 1e-15  # Small constant to avoid log(0)
+        sigmoid_output = np.clip(self.neurons, epsilon, 1 - epsilon)  # Clip predicted values to avoid log(0) or log(1)
+        
+        return -np.mean(true_labels * np.log(sigmoid_output) + (1 - true_labels) * np.log(1 - sigmoid_output))
+
+
+    
