@@ -62,7 +62,7 @@ for column_name, neurons in tumor_descriptions.items():
             # for column_name, neurons in tumor_descriptions.items():
             norm = Normalization(neurons).binary_cross_entropy(y_true)
             
-            print(f"\nNormal: {norm}") 
+            print(f"\nNormal: {norm}")
             
     
 
