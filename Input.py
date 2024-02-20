@@ -11,6 +11,7 @@ class InputLayer(Activations):
     def __init__(self, input_array, batch_size=5):
         super().__init__(input_array)
         self.batch_size = batch_size
+        self.batch_inputs = self.batch_inputs
     
     def batch_inputs(self):
         # Check if the batch size is not evenly divisible
