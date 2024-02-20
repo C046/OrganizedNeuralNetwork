@@ -24,13 +24,14 @@ output_layer = OutputLayer()
 
 # Example of using a single loop for both batched inputs and activations
 for batched_inputs in input_layer.batch_inputs():
-    print("Batch Elements:", batched_inputs)
+    print("\nBatch Elements:", batched_inputs)
     
     # Activator functions
     activators = Activations(batched_inputs)
     for neuron in activators.Iter_neuron():
         neuron,bias,weights = neuron
-        print("Neuron: ", neuron,"Bias: ", bias,"Weights: ", weights)
+        print("Neuron:", neuron,"\nBias:", bias,"Weights:", weights)
+        
 
     
 # # Hidden layer pipeline
