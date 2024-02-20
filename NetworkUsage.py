@@ -1,71 +1,55 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 19 17:35:28 2024
+Created on Tue Feb 20 11:21:41 2024
 
 @author: hadaw
 """
+
 import numpy as np
 import pandas as pd
 from mpmath import mp
-
 from OrganizedNeuralNetwork.Input import InputLayer
-from OrganizedNeuralNetwork.Hidden import HiddenLayer
-from OrganizedNeuralNetwork.Output import OutputLayer
 from OrganizedNeuralNetwork.Acts import Activations
 from OrganizedNeuralNetwork.Norm import Normalization
 
-# Data
-data = pd.read_csv("OrganizedNeuralNetwork/breast-cancer.csv")
-tumor_descriptions = data.drop('diagnosis', axis=1)
-tumor_descriptions = tumor_descriptions.applymap(mp.mpf)
-#mpf_array = mp.matrix(tumor_descriptions.values)
 
-# Convert 'M' and 'B' to 1 and 0 in y_true
-y_true = (data['diagnosis'].values == 'M').astype(int)
+class NeuralNetwork:
+    def __init__(self, data_path):
+        self.data = pd.read_csv(data_path)
+        self.tumor_descriptions = self.data.drop('diagnosis', axis=1)
+        self.tumor_descriptions = self.tumor_descriptions.applymap(mp.mpf)
+        self.y_true = (self.data['diagnosis'].values == 'M').astype(int)
 
+    def train(self, num_hidden_layers=10):
+        for column_name, neurons in self.tumor_descriptions.items():
+            input_layer = InputLayer(neurons, batch_size=569)
 
-# Input array
+            for i in range(num_hidden_layers):    
+                output = []
+                for batched_inputs in input_layer.batch_inputs():
+                    activators = Activations(batched_inputs)
+                    for neuron in activators.Iter_neuron():
+                        neuron, bias, weights = neuron
+                        Neuron_weighted_sum = np.dot(weights, neuron) + bias
+                        output.append(activators.Sigmoid(Neuron_weighted_sum))
 
-neurons = tumor_descriptions["id"]
+                    neurons = np.array(output)
+                    Y = neurons
+                    
+                    for Y_True in self.y_true:
+                        top = Y*Y_True
+                        bottom = (Y*(1-Y))
+                        
+                        #gradient = (Y*Y_True)/ (Y*(1-Y))
+                    
+                    #print(gradient)
+                    
+                    norm = Normalization(neurons).binary_cross_entropy(self.y_true)
+                    print(f"\nNormal: {norm}")
+                    
+                    
 
-
-# Normalization functions
-normal = Normalization(neurons)
-
-# Input layer pipeline
-for column_name, neurons in tumor_descriptions.items():
-    input_layer = InputLayer(neurons, batch_size=569)
+if __name__ == "__main__":
+    neural_network = NeuralNetwork("OrganizedNeuralNetwork/breast-cancer.csv")
+    neural_network.train(10)
     
-    num_hidden_layers = 10
-    for i in range(num_hidden_layers):    
-        output = []
-        # Example of using a single loop for both batched inputs and activations
-        for batched_inputs in input_layer.batch_inputs():
-            #print("\nBatch Elements:", batched_inputs)
-    
-            # Activator functions
-            activators = Activations(batched_inputs)
-    
-            for neuron in activators.Iter_neuron():
-            
-                neuron,bias,weights = neuron
-                Neuron_weighted_sum = np.dot(weights, neuron)+ bias
-                #print("Neuron:", neuron,"\nBias:", bias,"Weights:", weights, f"\nNeuron Weighted Sum: {Neuron_weighted_sum}")
-        
-        
-                output.append(activators.Sigmoid(Neuron_weighted_sum))
-        
-        
-            neurons = np.array(output)
-        
-            # # Iterate through columns
-            # for column_name, neurons in tumor_descriptions.items():
-            norm = Normalization(neurons).binary_cross_entropy(y_true)
-            
-            print(f"\nNormal: {norm}")
-            
-    
-
-# # Normal functions
-# Normals = Normalization()
-
