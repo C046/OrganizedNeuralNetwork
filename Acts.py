@@ -36,7 +36,8 @@ class Activations:
             pass
     
     def Sigmoid(self, x):
-        return 1/(1+(float(self.e)**(-x)))
+        return 1/(1+np.power((float(self.e)),(-x)))
+        #return 1/(1+(float(self.e)**(-x)))
         
             
         #return 1/(1+(float(self.e)**(-x)))
