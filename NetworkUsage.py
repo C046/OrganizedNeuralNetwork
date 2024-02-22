@@ -32,19 +32,20 @@ class NeuralNetwork:
                         neuron, bias, weights = neuron
                         Neuron_weighted_sum = np.dot(weights, neuron) + bias
                         output.append(activators.Sigmoid(Neuron_weighted_sum))
-
+                        
                     neurons = np.array(output)
-                    Y = neurons
+                    Partial_Derivatives = neurons-self.y_true
                     
-                    epsilon = 1e-10
+                    
+                    
                     # but since i cant divide by zero its unable to go forward, hmmmm
-                    partial_derivative = (Y*(1-Y))/epsilon+(Y*(1-self.y_true))
+                    #partial_derivative = (Y*(1-Y))/epsilon+(Y*(1-self.y_true))
                     
                     
                     #print(gradient)
                     
                     norm = Normalization(neurons).binary_cross_entropy(self.y_true)
-                    print(f"\nNormal: {norm} \n partial derivative: {partial_derivative}")
+                    print(f"\nNormal: {norm} ")
                     
                     
 
