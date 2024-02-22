@@ -36,14 +36,15 @@ class NeuralNetwork:
                     neurons = np.array(output)
                     Y = neurons
                     
+                    epsilon = 1e-10
                     # but since i cant divide by zero its unable to go forward, hmmmm
-                    partial_derivative = (Y*(1-Y))/(Y*(1-self.y_true))
-                 
+                    partial_derivative = (Y*(1-Y))/epsilon+(Y*(1-self.y_true))
+                    
                     
                     #print(gradient)
                     
                     norm = Normalization(neurons).binary_cross_entropy(self.y_true)
-                    print(f"\nNormal: {norm}")
+                    print(f"\nNormal: {norm} \n partial derivative: {partial_derivative}")
                     
                     
 
