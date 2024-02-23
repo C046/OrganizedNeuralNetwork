@@ -2,6 +2,7 @@ import numpy as np
 
 neurons = np.array([1, 2, 3, 4])
 from mpmath import mp
+import matplotlib.pyplot as plt
 
 class Activations:
     def __init__(self, input_array, e=False):
@@ -37,6 +38,20 @@ class Activations:
     
     def Sigmoid(self, x):
         return 1/(1+np.power((float(self.e)),(-x)))
-
+    
+    def slope(self, input_var, step_size):
+        return (self.Sigmoid((input_var+step_size))-self.Sigmoid(input_var))/step_size
+            
     
         
+    def plot_sigmoid_derivative(self, inputs, derivative_values):
+        x_values = inputs  # Adjust the range accordingly
+        #@derivative_values = self.Sigmoid_derivative(x_values)
+
+        plt.plot(x_values, derivative_values, label='Sigmoid Derivative')
+        plt.title('Derivative of Sigmoid Function')
+        plt.xlabel('Input')
+        plt.ylabel('Derivative Value')
+        plt.legend()
+        plt.grid(True)
+        plt.show()

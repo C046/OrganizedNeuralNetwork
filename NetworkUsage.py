@@ -12,7 +12,7 @@ from OrganizedNeuralNetwork.Input import InputLayer
 from OrganizedNeuralNetwork.Acts import Activations
 from OrganizedNeuralNetwork.Norm import Normalization
 
-
+thresh=0.5
 class NeuralNetwork:
     def __init__(self, data_path):
         self.data = pd.read_csv(data_path)
@@ -31,18 +31,23 @@ class NeuralNetwork:
                     for neuron in activators.Iter_neuron():
                         neuron, bias, weights = neuron
                         Neuron_weighted_sum = np.dot(weights, neuron) + bias
-                        output.append(activators.Sigmoid(Neuron_weighted_sum))
+                        sigmoid_output = activators.Sigmoid(Neuron_weighted_sum)
                         
+                        predicted_labels = np.int32(sigmoid_output >= thresh)
+                        output.append(sigmoid_output)
+                    
+                        
+                    derivatives = activators.slope(Neuron_weighted_sum, step_size=2)
+                    activators.plot_sigmoid_derivative(Neuron_weighted_sum, derivatives)  # Plot the derivative
+    
+                    accuracy = sum(predicted_labels == self.y_true) / len(self.y_true)
+                    print(f"accuracy:{accuracy}")
                     neurons = np.array(output)
-                    Partial_Derivatives = neurons-self.y_true
+                    #Partial_Derivatives = neurons-self.y_true
                     
                     
                     
-                    # but since i cant divide by zero its unable to go forward, hmmmm
-                    #partial_derivative = (Y*(1-Y))/epsilon+(Y*(1-self.y_true))
-                    
-                    
-                    #print(gradient)
+                   
                     
                     norm = Normalization(neurons).binary_cross_entropy(self.y_true)
                     print(f"\nNormal: {norm} ")
@@ -51,5 +56,5 @@ class NeuralNetwork:
 
 if __name__ == "__main__":
     neural_network = NeuralNetwork("OrganizedNeuralNetwork/breast-cancer.csv")
-    neural_network.train(10)
+    neural_network.train(10000)
     
