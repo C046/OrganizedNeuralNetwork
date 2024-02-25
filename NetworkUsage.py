@@ -10,6 +10,8 @@ import pandas as pd
 from OrganizedNeuralNetwork.Input import InputLayer
 from OrganizedNeuralNetwork.Acts import Activations
 from OrganizedNeuralNetwork.Norm import Normalization
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
 
 thresh=0.5
 class NeuralNetwork:
@@ -19,8 +21,10 @@ class NeuralNetwork:
         self.tumor_descriptions = self.data.drop('diagnosis', axis=1)
         self.tumor_descriptions = self.tumor_descriptions  # Double assignment, might be unintentional
         self.y_true = (self.data['diagnosis'].values == 'M').astype(int)
-
+        self.predicted_labels = []
+        
     def train(self, num_hidden_layers=1, learning_rate=0.01, epochs=100):
+        
         # Loop over training epochs
         for epoch in range(epochs):
             gradients = []  # To store gradients for each layer
@@ -43,6 +47,7 @@ class NeuralNetwork:
                             sigmoid_output = activators.Sigmoid(Neuron_weighted_sum)
 
                             predicted_labels = np.int32(sigmoid_output >= thresh)
+                            self.predicted_labels.append(predicted_labels)
                             output.append(sigmoid_output)
 
                             derivatives = activators.Sigmoid_Derivative(sigmoid_output)
@@ -67,6 +72,17 @@ class NeuralNetwork:
 
             # Optionally, print or store other information after each epoch
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {np.mean(norm)}")
+        print(type(predicted_labels))
+        # Calculate precision, recall, and F1-score
+        precision = precision_score(self.y_true, predicted_labels)
+        recall = recall_score(self.y_true, predicted_labels)
+        f1 = f1_score(self.y_true, predicted_labels)
+
+        # Print or store the validation metrics
+        print(f"Accuracy: {accuracy}")
+        print(f"Precision: {precision}")
+        print(f"Recall: {recall}")
+        print(f"F1-Score: {f1}")
 
 if __name__ == "__main__":
     neural_network = NeuralNetwork("OrganizedNeuralNetwork/breast-cancer.csv")

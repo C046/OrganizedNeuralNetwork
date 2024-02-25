@@ -25,4 +25,8 @@ class Normalization(Activations):
         #return -np.mean(true_labels * np.log(sigmoid_output) + (1 - true_labels) * np.log(1 - sigmoid_output))
 
 
+    def mean_squared_error(self, predicted, actual):
+        return 0.5 * np.mean((predicted - actual)**2)
     
+    def mse_derivative(self, predicted, actual):
+        return predicted - actual
