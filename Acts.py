@@ -57,7 +57,7 @@ class Activations:
         # Perform the weight updates here based on your optimization algorithm
         # Example: Simple gradient descent update
         mean_gradient = np.mean(gradients, axis=0)
-        self.weights -= learning_rate * mean_gradient
+        self.weights -= learning_rate * mean_gradient.reshape(self.weights.shape)
 
 
     def plot_sigmoid_derivative(self, inputs, derivative_values):
