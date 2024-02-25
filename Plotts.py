@@ -33,6 +33,7 @@ class Plotter(Activations):
         # Show the plot
         plt.title("3D Surface Plot of Your Sigmoid Function")
         plt.show()
+        
     def plot(self):
         plt.plot(self.inputs, self.func, label=self.name)
         plt.title("Activation Function")

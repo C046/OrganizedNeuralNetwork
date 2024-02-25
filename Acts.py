@@ -1,8 +1,10 @@
 import numpy as np
 
+import plotly.express as px
 neurons = np.array([1, 2, 3, 4])
-from mpmath import mp
-import matplotlib.pyplot as plt
+import mpmath as mp
+import plotly.io as pio
+
 
 class Activations:
     def __init__(self, input_array, e=False):
@@ -37,21 +39,40 @@ class Activations:
             pass
     
     def Sigmoid(self, x):
-        return 1/(1+np.power((float(self.e)),(-x)))
-    
-    def slope(self, input_var, step_size):
-        return (self.Sigmoid((input_var+step_size))-self.Sigmoid(input_var))/step_size
+        # Use the more stable sigmoid formula to avoid overflow
+        epsilon = 1e-15
+        x = x+epsilon
+       
+            
+        return 1.0/(1.0 + np.exp(-x))
             
     
-        
-    def plot_sigmoid_derivative(self, inputs, derivative_values):
-        x_values = inputs  # Adjust the range accordingly
-        #@derivative_values = self.Sigmoid_derivative(x_values)
+    
+    
+    def Sigmoid_Derivative(self, sigmoid_output):
+        return sigmoid_output * (1 - sigmoid_output)
+    
+            
+    def update_weights(self, gradients, learning_rate):
+        # Perform the weight updates here based on your optimization algorithm
+        # Example: Simple gradient descent update
+        mean_gradient = np.mean(gradients, axis=0)
+        self.weights -= learning_rate * mean_gradient
 
-        plt.plot(x_values, derivative_values, label='Sigmoid Derivative')
-        plt.title('Derivative of Sigmoid Function')
-        plt.xlabel('Input')
-        plt.ylabel('Derivative Value')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+
+    def plot_sigmoid_derivative(self, inputs, derivative_values):
+        # Adjust the range accordingly
+        x_values = inputs
+    
+        # Create a scatter plot
+        fig = px.line(x=x_values, y=derivative_values, labels={'x': 'Input', 'y': 'Derivative Value'},
+                         title='Derivative of Sigmoid Function', template='plotly')
+                        
+        # Show the plot
+        fig.show()
+
+        # Save the HTML representation of the plot to a file
+        with open("plot.html", "w", encoding="utf-8") as file:
+            plot_html = str(pio.to_html(fig, full_html=False))
+            file.write(plot_html)
+        
