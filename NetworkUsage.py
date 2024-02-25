@@ -63,7 +63,7 @@ class NeuralNetwork:
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {np.mean(norm)}")
 
 
-# ... (the rest of your class)
+
 
 if __name__ == "__main__":
     neural_network = NeuralNetwork("OrganizedNeuralNetwork/breast-cancer.csv")
