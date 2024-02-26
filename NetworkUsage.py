@@ -43,10 +43,10 @@ class NeuralNetwork:
 
 
         self.epsilon = 1e-15
-    def propagation(self, output_layer_gradient, hidden_layers=1, epochs=1, learning_rate=0.001):
+    # def propagation(self, output_layer_gradient, hidden_layers=1, epochs=1, learning_rate=0.001):
         
-        for epoch in range(epochs):
-            for hidden_layers in range(hidden_layers):
+    #     for epoch in range(epochs):
+    #         for hidden_layers in range(hidden_layers):
                 
     
     def train(self, hidden_layers=1, epochs=1, learning_rate=0.001):
