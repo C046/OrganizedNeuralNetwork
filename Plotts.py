@@ -8,15 +8,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from OrganizedNeuralNetwork.Acts import Activations
-class Plotter(Activations):
-    def __init__(self, inputs, func, name="Function"):
-        super(Plotter, self).__init__(inputs)
-        self.inputs = inputs
-        self.func = func
+
+
+class Plotter:
+    def __init__(self, name="Function"):
+        
         self.name=name
         
-    def plot_3d(self):
-        X,Y = np.meshgrid(self.inputs, self.func)
+    def plot_3d(self, inputs, func):
+        X,Y = np.meshgrid(inputs, func)
         Z = self.Sigmoid((X+Y))
         
         fig = plt.figure()
@@ -34,13 +34,16 @@ class Plotter(Activations):
         plt.title("3D Surface Plot of Your Sigmoid Function")
         plt.show()
         
-    def plot(self):
-        plt.plot(self.inputs, self.func, label=self.name)
-        plt.title("Activation Function")
-        plt.xlabel("X-Axis")
-        plt.ylabel("Y-Axis")
+    def plot_loss_curve(self, loss_history):
+        """
+        Plots the training loss curve over epochs.
+        
+        Parameters:
+            - loss_history (list): List of loss values for each epoch.
+        """
+        plt.plot(loss_history, label='Training Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.title('Training Loss Curve')
         plt.legend()
-        plt.grid(True)
         plt.show()
-        
-        

@@ -43,8 +43,8 @@ class Activations:
         epsilon = 1e-15
         x = x+epsilon
        
-            
-        return 1.0/(1.0 + np.exp(-x))
+        
+        return 1.0/(1.0 + mp.exp(-x))
             
     
     

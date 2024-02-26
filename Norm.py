@@ -17,7 +17,7 @@ class Normalization(Activations):
     def binary_cross_entropy(self, true_labels):
         epsilon = 1e-15  # Small constant to avoid log(0)
         sigmoid_output = np.clip(self.neurons, epsilon, 1 - epsilon)  # Clip predicted values to avoid log(0) or log(1)
-        true_labels = np.clip(true_labels, epsilon, 1-epsilon)
+        true_labels = np.clip(true_labels, -epsilon, 1+epsilon)
         
         sigmoid_output = np.array(sigmoid_output, dtype=np.float64)
         
