@@ -12,7 +12,8 @@ class Normalization(Activations):
     def __init__(self, input_array):
         super().__init__(input_array)
         #print(input_array)
-        self.neurons = input_array
+        
+        self.neurons = np.array(input_array)
         
     def binary_cross_entropy(self, true_labels, sigmoid_output):
         epsilon = 1e-15

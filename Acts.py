@@ -38,14 +38,14 @@ class Activations:
         except StopIteration:
             pass
     
-    def Sigmoid(self, x):
-        # Use the more stable sigmoid formula to avoid overflow
-        epsilon = 1e-15
-        x = x+epsilon
-        
-        return 1.0/(1.0) + mp.exp(-x)
-        
-            
+    def Sigmoid(self, x, threshold=np.random.uniform(0.40,0.50), epsilon=1e-15):
+        # Sigmoid function
+        sigmoid_result = 1 / (1 + np.exp(-x))
+
+        # Apply 1,0 conditional with threshold
+        sigmoid_result = np.where(sigmoid_result >= threshold, 1.0, 0.0)
+
+        return (sigmoid_result, threshold)
     
     
     
