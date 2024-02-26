@@ -13,15 +13,19 @@ class Normalization(Activations):
         super().__init__(input_array)
         #print(input_array)
         self.neurons = input_array
-    
-    def binary_cross_entropy(self, true_labels):
-        epsilon = 1e-15  # Small constant to avoid log(0)
-        sigmoid_output = np.clip(self.neurons, epsilon, 1 - epsilon)  # Clip predicted values to avoid log(0) or log(1)
-        true_labels = np.clip(true_labels, -epsilon, 1+epsilon)
         
-        sigmoid_output = np.array(sigmoid_output, dtype=np.float64)
+    def binary_cross_entropy(self, true_labels, sigmoid_output):
+        epsilon = 1e-15
+        sigmoid_output = np.clip(sigmoid_output, epsilon, 1 - epsilon)
+        return -np.mean((true_labels * np.log(sigmoid_output)) + ((1 - true_labels) * np.log(1 - sigmoid_output)))
+    # def binary_cross_entropy(self, true_labels):
+    #     epsilon = 1e-15  # Small constant to avoid log(0)
+    #     sigmoid_output = np.clip(self.neurons, epsilon, 1 - epsilon)  # Clip predicted values to avoid log(0) or log(1)
+    #     true_labels = np.clip(true_labels, -epsilon, 1+epsilon)
         
-        return -np.mean((true_labels*np.log(sigmoid_output))+((1-true_labels)*np.log((1-sigmoid_output))))
+    #     sigmoid_output = np.array(sigmoid_output, dtype=np.float64)
+        
+        # return -np.mean((true_labels*np.log(sigmoid_output))+((1-true_labels)*np.log((1-sigmoid_output))))
         #return -np.mean(true_labels * np.log(sigmoid_output) + (1 - true_labels) * np.log(1 - sigmoid_output))
 
 

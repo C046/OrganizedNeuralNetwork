@@ -42,9 +42,9 @@ class Activations:
         # Use the more stable sigmoid formula to avoid overflow
         epsilon = 1e-15
         x = x+epsilon
-       
         
-        return 1.0/(1.0 + mp.exp(-x))
+        return 1.0/(1.0) + mp.exp(-x)
+        
             
     
     

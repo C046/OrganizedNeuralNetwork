@@ -9,7 +9,7 @@ from OrganizedNeuralNetwork.Acts import Activations
 
 class InputLayer(Activations):
     def __init__(self, input_array, batch_size=5):
-        self.input_array = input_array
+        self.input_array = np.array(input_array)
         self.input_size = input_array.size
         
         self.batch_size = batch_size
