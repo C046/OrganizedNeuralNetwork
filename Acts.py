@@ -15,7 +15,7 @@ class Activations:
         self.weights = self.Grwb(size=self.input_size)
         
         self.e = 2.71828
-        
+        self.epsilon = 1e-15
     
     def Grwb(self, size):
         """
@@ -45,12 +45,13 @@ class Activations:
         # Apply 1,0 conditional with threshold
         sigmoid_result = np.where(sigmoid_result >= threshold, 1.0, 0.0)
 
-        return (sigmoid_result, threshold)
+        return (float(sigmoid_result), threshold)
     
     
     
     def Sigmoid_Derivative(self, sigmoid_output):
-        return sigmoid_output * (1 - sigmoid_output)
+        return np.dot(sigmoid_output, (1-sigmoid_output)) + self.epsilon 
+   
     
             
     def update_weights(self, gradients, learning_rate):

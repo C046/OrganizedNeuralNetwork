@@ -19,7 +19,7 @@ class NeuralNetwork:
         self.features = self.data.drop('diagnosis', axis=1)
         self.labels = (self.data['diagnosis'].values == 'M').astype(int)
         self.batch_size = batch_size
-        self.neurons,self.weights,self.biases,self.sums,self.sig_out,self.sig_der,self.pred_labels,self.accu,self.norm,self.norm_der=([],[],[],[],[],[],[],[],[],[])
+        self.neurons,self.weights,self.biases,self.sums,self.sig_out,self.sig_der,self.pred_labels,self.accu,self.loss,self.loss_der=([],[],[],[],[],[],[],[],[],[])
         
         self.neuron_data = {
             "Neuron": self.neurons,
@@ -36,15 +36,18 @@ class NeuralNetwork:
         
         self.normal_data = {
             "Accuracy":self.accu,
-            "Normal":self.norm,
-            "Normal_Derivative":self.norm_der
+            "Normal":self.loss,
+            "Normal_Derivative":self.loss_der
         }
         
 
 
         self.epsilon = 1e-15
-    def propagation(self):
-        pass
+    def propagation(self, output_layer_gradient, hidden_layers=1, epochs=1, learning_rate=0.001):
+        
+        for epoch in range(epochs):
+            for hidden_layers in range(hidden_layers):
+                
     
     def train(self, hidden_layers=1, epochs=1, learning_rate=0.001):
         # Iterate through epochs
@@ -84,11 +87,23 @@ class NeuralNetwork:
                             # Append the prediction set
                             self.pred_labels.append(sigmoid_out)
                 
-                            
-            self.norm.append(Normalization(np.array(self.neurons)).binary_cross_entropy(self.labels, self.sig_out))
-            self.norm_der.append((neurons - self.labels) / (neurons * (1 - neurons) + self.epsilon))
+            
+            self.Normalization = Normalization(np.array(self.neurons))
+            self.loss.append(self.Normalization.binary_cross_entropy(self.labels, self.sig_out))
+           
+            self.loss_der.append(self.Normalization.binary_cross_entropy_derivative(np.array(self.pred_labels), np.array(self.labels)))
             self.neurons = self.sig_out
+            self.accu.append(sum(self.pred_labels))
+            # Backpropagate the gradients through the network
+            self.output_layer_gradient = (np.array(self.loss_der) * np.array(self.sig_der))*self.neurons
+            print(self.output_layer_gradient)
             self.pred_labels.clear()
+            
+            
+            
+            #sigmoid_data["Sigmoid_Derivative"] = np.array((sigmoid_data["Sigmoid_Derivative"]),dtype=np.float64).flatten()
+            
+                #self.activation_data["Predicted_Labels"])
             
         
                                  

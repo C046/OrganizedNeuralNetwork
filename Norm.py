@@ -12,13 +12,17 @@ class Normalization(Activations):
     def __init__(self, input_array):
         super().__init__(input_array)
         #print(input_array)
-        
+        self.epsilon = 1e-15
         self.neurons = np.array(input_array)
         
     def binary_cross_entropy(self, true_labels, sigmoid_output):
-        epsilon = 1e-15
-        sigmoid_output = np.clip(sigmoid_output, epsilon, 1 - epsilon)
+        
+        sigmoid_output = np.clip(sigmoid_output, self.epsilon, 1 - self.epsilon)
         return -np.mean((true_labels * np.log(sigmoid_output)) + ((1 - true_labels) * np.log(1 - sigmoid_output)))
+    
+    def binary_cross_entropy_derivative(self, predicted_output, true_label):
+        print(predicted_output, true_label)
+        return (predicted_output-true_label) / (np.dot(predicted_output, (1-predicted_output)) + self.epsilon)
     # def binary_cross_entropy(self, true_labels):
     #     epsilon = 1e-15  # Small constant to avoid log(0)
     #     sigmoid_output = np.clip(self.neurons, epsilon, 1 - epsilon)  # Clip predicted values to avoid log(0) or log(1)
